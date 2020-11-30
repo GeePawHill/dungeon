@@ -1,10 +1,8 @@
 package org.geepawhill.dungeon
 
-import javafx.event.EventHandler
+import javafx.collections.ObservableList
 import javafx.geometry.Orientation
-import javafx.scene.control.ScrollPane
-import javafx.scene.paint.Color
-import javafx.scene.transform.Scale
+import javafx.scene.Node
 import javafx.stage.Stage
 import tornadofx.*
 
@@ -16,60 +14,52 @@ class Main : App(MainView::class) {
 }
 
 class MainView : View() {
+    val map = Map(200, 200)
 
-    val scale = Scale(1.0, 1.0)
-    lateinit var scroller: ScrollPane
+    lateinit var rectangles: ObservableList<Node>
+
+    val zoomable = group {
+        rectangle(0.0, 0.0, map.widthInPixels, map.heightInPixels)
+        group {
+            rectangles = this.children
+        }
+    }
+
+    val zoomer = PanAndZoomPane(zoomable)
 
     override val root = borderpane {
         right = toolbar {
             orientation = Orientation.VERTICAL
-            button("Zoom Out") {
+            button("Initial Place") {
+                action {
+                    map.place(45, 45, 10, 10)
+                    update()
+                }
             }
 
-            button("Zoom In") {
+            button("Random Fills") {
+                action {
+                    map.randomFills(.3)
+                    update()
+                }
             }
         }
-        center = scrollpane {
-            scroller = this
-            isPannable = true
-            vbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
-            hbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
-            content = group {
-                onScroll = EventHandler { event ->
-                    println("Scroll")
-                    if (event.deltaY > 0) {
-                        scale.x *= SCALE_STEP
-                        scale.y *= SCALE_STEP
-                        scale.pivotX = this@scrollpane.hvalue + this@scrollpane.width / 2.0
-                        scale.pivotY = this@scrollpane.vvalue + this@scrollpane.height / 2.0
-                        transforms.clear()
-                        transforms.add(scale)
-                    } else {
-                        scale.x /= SCALE_STEP
-                        scale.y /= SCALE_STEP
-                        scale.pivotX = this@scrollpane.hvalue + this@scrollpane.width / 2.0
-                        scale.pivotY = this@scrollpane.vvalue + this@scrollpane.height / 2.0
-                        transforms.clear()
-                        transforms.add(scale)
-                    }
-                }
-                rectangle(0.0, 0.0, SIZE, SIZE)
-                for (x in 1 until TILES_IN_MAP) {
-                    line(x * TILESIZE, 0.0, x * TILESIZE, SIZE) {
-                        stroke = Color.RED
-                    }
-                    line(0.0, x * TILESIZE, SIZE, x * TILESIZE) {
-                        stroke = Color.BLUE
-                    }
-                }
-            }
+        center = group {
+            style = "-fx-background-color: #FFFFFF;"
+            this += zoomer
         }
     }
 
+
+    init {
+        update()
+    }
+
+    fun update() {
+        map.populateRegions(rectangles)
+    }
+
     companion object {
-        const val SIZE = 8192.0
-        const val TILESIZE = 32.0
-        const val TILES_IN_MAP = (SIZE / TILESIZE).toInt()
         const val SCALE_STEP = .8
     }
 }
