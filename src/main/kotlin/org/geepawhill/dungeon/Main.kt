@@ -15,6 +15,7 @@ class Main : App(MainView::class) {
 
 class MainView : View() {
     val map = Map(200, 200)
+    val maker = MapMaker(map)
 
     lateinit var rectangles: ObservableList<Node>
 
@@ -32,22 +33,19 @@ class MainView : View() {
             orientation = Orientation.VERTICAL
             button("Initial Place") {
                 action {
-                    map.place(45, 45, 10, 10)
+                    maker.place(45, 45, 55, 55)
                     update()
                 }
             }
 
             button("Random Fills") {
                 action {
-                    map.randomFills(.3)
+                    maker.randomFills(25)
                     update()
                 }
             }
         }
-        center = group {
-            style = "-fx-background-color: #FFFFFF;"
-            this += zoomer
-        }
+        center = zoomer
     }
 
 
@@ -56,7 +54,7 @@ class MainView : View() {
     }
 
     fun update() {
-        map.populateRegions(rectangles)
+        maker.populateRegions(rectangles)
     }
 
     companion object {
