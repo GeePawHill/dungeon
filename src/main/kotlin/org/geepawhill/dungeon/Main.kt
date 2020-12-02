@@ -16,6 +16,7 @@ class Main : App(MainView::class) {
 class MainView : View() {
     val map = Map(200, 200)
     val maker = MapMaker(map)
+    val mapToScreen = MapToScreen(map)
 
     lateinit var rectangles: ObservableList<Node>
 
@@ -31,16 +32,9 @@ class MainView : View() {
     override val root = borderpane {
         right = toolbar {
             orientation = Orientation.VERTICAL
-            button("Initial Place") {
+            button("Generate") {
                 action {
-                    maker.place(45, 45, 55, 55)
-                    update()
-                }
-            }
-
-            button("Random Fills") {
-                action {
-                    maker.randomFills(25)
+                    maker.generate()
                     update()
                 }
             }
@@ -54,7 +48,7 @@ class MainView : View() {
     }
 
     fun update() {
-        maker.populateRegions(rectangles)
+        mapToScreen.mapToScreen(rectangles)
     }
 
     companion object {

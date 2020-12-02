@@ -18,4 +18,5 @@ class CoordsTest {
         assertThat(coords[Direction.NORTHWEST]).isEqualTo(Coords(-1, -1))
         assertThat(coords[Direction.NORTHEAST]).isEqualTo(Coords(1, -1))
     }
+
 }

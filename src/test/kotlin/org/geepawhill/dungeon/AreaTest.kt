@@ -42,4 +42,28 @@ class AreaTest {
         assertThat(area.intersects(other)).isTrue()
         assertThat(other.intersects(area)).isTrue()
     }
+
+    @Test
+    fun `contains a contained point`() {
+        val area = Area(0, 0, 10, 10)
+        assertThat(area.contains(Coords(5, 5))).isTrue()
+    }
+
+    @Test
+    fun `line contains point`() {
+        val area = Area(0, 0, 10, 0)
+        assertThat(area.contains(Coords(5, 0))).isTrue()
+    }
+
+    @Test
+    fun `contains a border point`() {
+        val area = Area(0, 0, 10, 10)
+        assertThat(area.contains(Coords(10, 5))).isTrue()
+    }
+
+    @Test
+    fun `doesn't contain an outside point`() {
+        val area = Area(0, 0, 10, 10)
+        assertThat(area.contains(Coords(11, 5))).isFalse()
+    }
 }
