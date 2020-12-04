@@ -20,7 +20,7 @@ class MapMaker(val map: Map) {
         rooms.add(area)
         for (c in area.west..area.east) {
             for (r in area.north..area.south) {
-                map.cell[c][r] = Cell.FLOOR
+                map.cell[c, r] = Cell.FLOOR
             }
         }
     }

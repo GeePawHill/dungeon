@@ -19,7 +19,7 @@ class MapToScreen(val map: Map) {
     fun mapToScreen(destination: ObservableList<Node>) {
         for (c in 0 until map.width) {
             for (r in 0 until map.height) {
-                when (map.cell[c][r]) {
+                when (map.cell[c, r]) {
                     Cell.BORDER -> destination.add(borderToScreen(c, r))
                     Cell.FLOOR -> destination.add(floorToScreen(c, r))
                     Cell.HALLWAY -> destination.add(hallwayToScreen(c, r))
