@@ -37,7 +37,6 @@ class MapMaker(val map: Map) {
             target -= attemptFill()
             attempts -= 1
         }
-        val achieved = (target * 100) / (map.width * map.height)
         println("Attempts: $attempts")
     }
 
@@ -88,21 +87,23 @@ class MapMaker(val map: Map) {
 
     fun connectGroups(): Boolean {
         var attempts = 0
-        while (groups.size > 1 && attempts < 7) {
+        while (groups.size > 1 && attempts < 9) {
             attempts += 1
+            println("$attempts ---------")
             val from = randoms.choose(groups)
             println("From: ${from.union}")
             val direction = randoms.orthogonal()
             println("Direction: $direction")
-            val fromBorder = projectBackwards(from.union, direction)
-            println("FromBorder: $fromBorder")
-            val toDigger = Digger(map, fromBorder, direction)
-            if (map[toDigger.cause] == Cell.BORDER) continue
+            val seed = chooseGroupEdge(from, direction)[direction]
+            println("Seed: $seed")
+            val connector = Connector(map, seed, direction)
+            if (!connector.isLegal) continue
             println("Got one!")
-            toDigger.commit(Cell.GROUP_HALLWAY)
-            val to = groups.filter { it.contains(toDigger.cause) }[0]
+            connector.commit(Cell.GROUP_HALLWAY)
+            println("Connector: ${connector.area}")
+            val to = groups.filter { it.containsInside(connector.end.cause) }[0]
             println("To: ${to.union}")
-            mergeGroups(from, to, toDigger.hallway)
+            mergeGroups(from, to, connector.area)
         }
         return true
     }
@@ -113,22 +114,6 @@ class MapMaker(val map: Map) {
         to.hallways.addAll(from.hallways)
         to.hallways.add(hallway)
     }
-
-    fun projectBackwards(area: Area, direction: Direction): Coords {
-        val fromBorder = chooseEdge(area, direction)
-        if (map[fromBorder] != Cell.GRANITE) return fromBorder
-        val fromDigger = Digger(map, fromBorder, oppositeOf(direction))
-        return fromDigger.dug.last()
-    }
-
-    private fun oppositeOf(direction: Direction): Direction =
-            when (direction) {
-                Direction.NORTH -> Direction.SOUTH
-                Direction.EAST -> Direction.WEST
-                Direction.SOUTH -> Direction.NORTH
-                Direction.WEST -> Direction.EAST
-                else -> throw RuntimeException("Non-orthogonal supplied to oppositeOf.")
-            }
 
     private fun addRoomToHallway(from: Area, toCoords: Coords, hallway: Area) {
         for (group in groups) {
@@ -181,6 +166,13 @@ class MapMaker(val map: Map) {
             Direction.EAST -> return Coords(area.east, randoms.interval(area.north, area.south))
             else -> throw RuntimeException("Illegal direction for choose edge.")
         }
+    }
+
+    fun chooseGroupEdge(group: SubGroup, direction: Direction): Coords {
+        var groupEdge = chooseEdge(group.union, direction)
+        while (map[groupEdge] == Cell.GRANITE || !group.containsInside(groupEdge)) groupEdge =
+            groupEdge[direction.opposite()]
+        return groupEdge
     }
 
     companion object {

@@ -16,4 +16,10 @@ class SubGroup {
         }
 
     fun contains(coords: Coords) = union.contains(coords)
+
+    fun containsInside(coords: Coords): Boolean {
+        rooms.forEach { if (it.contains(coords)) return true }
+        hallways.forEach { if (it.contains(coords)) return true }
+        return false
+    }
 }

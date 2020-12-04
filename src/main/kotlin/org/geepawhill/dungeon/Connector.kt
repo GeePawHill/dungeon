@@ -7,17 +7,25 @@ class Connector(private val map: Map, seed: Coords, private val direction: Direc
     private val neighbor2 = direction.neighbors().second
     private val opposite = direction.opposite()
 
-    val end: Terminator = moveToTerminator(seed, direction)
-    val start: Terminator = moveToTerminator(end.coords, opposite)
+    private val cells = mutableListOf<Coords>()
 
-    private fun moveToTerminator(seed: Coords, direction: Direction): Terminator {
+    val end: Terminator = moveToTerminator(seed, direction, false)
+    val start: Terminator = moveToTerminator(end.coords[opposite], opposite, true)
+    val isLegal = map[end.cause] != Cell.BORDER && map[start.cause] != Cell.BORDER
+    val area = Area.normalized(start.coords, end.coords)
+
+    fun commit(type: Cell) {
+        area.fill(map, type)
+    }
+
+    private fun moveToTerminator(seed: Coords, direction: Direction, track: Boolean): Terminator {
         var last = seed
         while (true) {
-            val forwards = last[direction]
-            if (map[forwards] != Cell.GRANITE) return Terminator(last, forwards)
-            if (map[forwards[neighbor1]] != Cell.GRANITE) return Terminator(last, forwards[neighbor1])
-            if (map[forwards[neighbor2]] != Cell.GRANITE) return Terminator(last, forwards[neighbor2])
-            last = forwards
+            if (map[last[neighbor1]] != Cell.GRANITE) return Terminator(last, last[neighbor1])
+            if (map[last[neighbor2]] != Cell.GRANITE) return Terminator(last, last[neighbor2])
+            if (map[last[direction]] != Cell.GRANITE) return Terminator(last, last[direction])
+            if (track) cells.add(last)
+            last = last[direction]
         }
     }
 }

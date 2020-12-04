@@ -66,4 +66,22 @@ class AreaTest {
         val area = Area(0, 0, 10, 10)
         assertThat(area.contains(Coords(11, 5))).isFalse()
     }
+
+    @Test
+    fun `fill`() {
+        val map = Map(10, 10)
+        val area = Area(0, 0, 5, 5)
+        area.fill(map, Cell.GROUP_HALLWAY)
+        for (c in 0..5) {
+            for (r in 0..5) {
+                assertThat(map[c, r]).withFailMessage("Testing ($c,$r)").isEqualTo(Cell.GROUP_HALLWAY)
+            }
+        }
+    }
+
+    @Test
+    fun `normalize`() {
+        val area = Area.normalized(Coords(10, 9), Coords(0, 1))
+        assertThat(area).isEqualTo(Area(0, 1, 10, 9))
+    }
 }

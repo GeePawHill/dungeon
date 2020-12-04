@@ -21,7 +21,8 @@ class MainView : View() {
     lateinit var rectangles: ObservableList<Node>
 
     val zoomable = group {
-        rectangle(0.0, 0.0, map.widthInPixels, map.heightInPixels)
+        rectangle(0.0, 0.0, map.widthInPixels, map.heightInPixels) {
+        }
         group {
             rectangles = this.children
         }
@@ -32,6 +33,11 @@ class MainView : View() {
     override val root = borderpane {
         right = toolbar {
             orientation = Orientation.VERTICAL
+            label {
+                mapToScreen.cell.addListener { _, _, value ->
+                    text = value.toString()
+                }
+            }
             button("Generate") {
                 action {
                     maker.generate()
@@ -45,8 +51,9 @@ class MainView : View() {
 
     init {
         update()
-    }
 
+    }
+    
     fun update() {
         mapToScreen.mapToScreen(rectangles)
     }

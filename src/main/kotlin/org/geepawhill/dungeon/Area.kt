@@ -17,7 +17,19 @@ data class Area(val west: Int, val north: Int, val east: Int, val south: Int) {
         return intersects(Area(coords.x, coords.y, coords.x, coords.y))
     }
 
-    fun union(other: Area): Area = Area(min(west, other.west), min(north, other.north), max(east, other.east), max(south, other.south))
+    fun fill(map: Map, type: Cell) {
+        for (c in west..east) {
+            for (r in north..south) map[c, r] = type
+        }
+    }
+
+    fun union(other: Area): Area =
+        Area(min(west, other.west), min(north, other.north), max(east, other.east), max(south, other.south))
 
     override fun toString(): String = "($west,$north) - ($east,$south)"
+
+    companion object {
+        fun normalized(start: Coords, end: Coords) =
+            Area(min(start.x, end.x), min(start.y, end.y), max(start.x, end.x), max(start.y, end.y))
+    }
 }

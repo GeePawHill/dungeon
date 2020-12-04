@@ -1,6 +1,8 @@
 package org.geepawhill.dungeon
 
+import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.ObservableList
+import javafx.event.EventHandler
 import javafx.geometry.Rectangle2D
 import javafx.scene.Node
 import javafx.scene.paint.Color
@@ -8,14 +10,20 @@ import javafx.scene.shape.Rectangle
 
 class MapToScreen(val map: Map) {
 
+    val cell = SimpleObjectProperty<Coords>()
+
+    fun handleClick(x: Int, y: Int) {
+        cell.value = Coords(x, y)
+    }
+
     fun mapToScreen(destination: ObservableList<Node>) {
         for (c in 0 until map.width) {
             for (r in 0 until map.height) {
                 when (map.cell[c][r]) {
                     Cell.BORDER -> destination.add(borderToScreen(c, r))
-                    Cell.FLOOR -> destination.add(borderToFloor(c, r))
-                    Cell.HALLWAY -> destination.add(borderToHallway(c, r))
-                    Cell.GROUP_HALLWAY -> destination.add(borderToGroupHallway(c, r))
+                    Cell.FLOOR -> destination.add(floorToScreen(c, r))
+                    Cell.HALLWAY -> destination.add(hallwayToScreen(c, r))
+                    Cell.GROUP_HALLWAY -> destination.add(groupHallwayToScreen(c, r))
                     else -> {
                     }
                 }
@@ -28,30 +36,34 @@ class MapToScreen(val map: Map) {
         return Rectangle(coords.minX, coords.minY, coords.width, coords.height).apply {
             fill = Color.BLUE
             stroke = Color.YELLOW
+            onMouseClicked = EventHandler { _ -> handleClick(col, row) }
         }
     }
 
-    fun borderToFloor(col: Int, row: Int): Rectangle {
+    fun floorToScreen(col: Int, row: Int): Rectangle {
         val coords = toRectangle(col, row)
         return Rectangle(coords.minX, coords.minY, coords.width, coords.height).apply {
             fill = Color.YELLOW
             stroke = Color.BLACK
+            onMouseClicked = EventHandler { _ -> handleClick(col, row) }
         }
     }
 
-    fun borderToHallway(col: Int, row: Int): Rectangle {
+    fun hallwayToScreen(col: Int, row: Int): Rectangle {
         val coords = toRectangle(col, row)
         return Rectangle(coords.minX, coords.minY, coords.width, coords.height).apply {
             fill = Color.RED
             stroke = Color.BLACK
+            onMouseClicked = EventHandler { _ -> handleClick(col, row) }
         }
     }
 
-    fun borderToGroupHallway(col: Int, row: Int): Rectangle {
+    fun groupHallwayToScreen(col: Int, row: Int): Rectangle {
         val coords = toRectangle(col, row)
         return Rectangle(coords.minX, coords.minY, coords.width, coords.height).apply {
             fill = Color.GRAY
             stroke = Color.BLACK
+            onMouseClicked = EventHandler { _ -> handleClick(col, row) }
         }
     }
 
