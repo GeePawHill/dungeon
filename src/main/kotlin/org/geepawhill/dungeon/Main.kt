@@ -1,8 +1,6 @@
 package org.geepawhill.dungeon
 
-import javafx.collections.ObservableList
-import javafx.geometry.Orientation
-import javafx.scene.Node
+import javafx.scene.Group
 import javafx.stage.Stage
 import tornadofx.*
 
@@ -16,46 +14,27 @@ class Main : App(MainView::class) {
 class MainView : View() {
     val map = Map(200, 200)
     val maker = MapMaker(map)
-    val mapToScreen = MapToScreen(map)
+    val mapToScreen: MapToScreen
 
-    lateinit var rectangles: ObservableList<Node>
+    lateinit var cellLayer: Group
 
     val zoomable = group {
         rectangle(0.0, 0.0, map.widthInPixels, map.heightInPixels) {
         }
-        group {
-            rectangles = this.children
-        }
+        cellLayer = group {}
     }
 
     val zoomer = PanAndZoomPane(zoomable)
 
     override val root = borderpane {
-        right = toolbar {
-            orientation = Orientation.VERTICAL
-            label {
-                mapToScreen.cell.addListener { _, _, value ->
-                    text = value.toString()
-                }
-            }
-            button("Generate") {
-                action {
-                    maker.generate()
-                    update()
-                }
-            }
-        }
+        right = RulesView(maker).root
         center = zoomer
     }
 
 
     init {
-        update()
-
-    }
-    
-    fun update() {
-        mapToScreen.mapToScreen(rectangles)
+        mapToScreen = MapToScreen(map, cellLayer)
+        mapToScreen.update()
     }
 
     companion object {

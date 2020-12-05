@@ -4,13 +4,18 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.ObservableList
 import javafx.event.EventHandler
 import javafx.geometry.Rectangle2D
+import javafx.scene.Group
 import javafx.scene.Node
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
 
-class MapToScreen(val map: Map) {
+class MapToScreen(val map: Map, val cellLayer: Group) {
 
     val cell = SimpleObjectProperty<Coords>()
+
+    fun update() {
+        mapToScreen(cellLayer.children)
+    }
 
     fun handleClick(x: Int, y: Int) {
         cell.value = Coords(x, y)
@@ -31,7 +36,7 @@ class MapToScreen(val map: Map) {
         }
     }
 
-    fun borderToScreen(col: Int, row: Int): Rectangle {
+    private fun borderToScreen(col: Int, row: Int): Rectangle {
         val coords = toRectangle(col, row)
         return Rectangle(coords.minX, coords.minY, coords.width, coords.height).apply {
             fill = Color.BLUE
@@ -40,7 +45,7 @@ class MapToScreen(val map: Map) {
         }
     }
 
-    fun floorToScreen(col: Int, row: Int): Rectangle {
+    private fun floorToScreen(col: Int, row: Int): Rectangle {
         val coords = toRectangle(col, row)
         return Rectangle(coords.minX, coords.minY, coords.width, coords.height).apply {
             fill = Color.YELLOW
@@ -49,7 +54,7 @@ class MapToScreen(val map: Map) {
         }
     }
 
-    fun hallwayToScreen(col: Int, row: Int): Rectangle {
+    private fun hallwayToScreen(col: Int, row: Int): Rectangle {
         val coords = toRectangle(col, row)
         return Rectangle(coords.minX, coords.minY, coords.width, coords.height).apply {
             fill = Color.RED
@@ -58,7 +63,7 @@ class MapToScreen(val map: Map) {
         }
     }
 
-    fun groupHallwayToScreen(col: Int, row: Int): Rectangle {
+    private fun groupHallwayToScreen(col: Int, row: Int): Rectangle {
         val coords = toRectangle(col, row)
         return Rectangle(coords.minX, coords.minY, coords.width, coords.height).apply {
             fill = Color.GRAY
@@ -67,6 +72,7 @@ class MapToScreen(val map: Map) {
         }
     }
 
-    fun toRectangle(x: Int, y: Int) = Rectangle2D(x * Map.TILESIZE, y * Map.TILESIZE, Map.TILESIZE, Map.TILESIZE)
+    private fun toRectangle(x: Int, y: Int) =
+        Rectangle2D(x * Map.TILESIZE, y * Map.TILESIZE, Map.TILESIZE, Map.TILESIZE)
 
 }

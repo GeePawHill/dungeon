@@ -3,7 +3,12 @@ package org.geepawhill.dungeon
 import java.util.*
 
 class Randoms {
-    val source = Random(999)
+    private var source = Random(999)
+
+
+    fun reseed(seed: Long) {
+        source = Random(seed)
+    }
 
     fun interval(from: Int, to: Int) = from + source.nextInt(to - from + 1)
 

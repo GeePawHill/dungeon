@@ -6,13 +6,17 @@ class MapMaker(val map: Map) {
     val rooms = mutableListOf<Area>()
     val groups = mutableListOf<SubGroup>()
 
-    fun generate() {
+    private var rules = MapRules()
+
+    fun generate(rules: MapRules = MapRules()) {
+        this.rules = rules
+        randoms.reseed(rules.seed)
         while (true) {
             map.reset()
             makePlacements()
             makeRandomRooms(10)
             makeGroups()
-            if (connectGroups() == true) return
+            if (connectGroups()) return
         }
     }
 
