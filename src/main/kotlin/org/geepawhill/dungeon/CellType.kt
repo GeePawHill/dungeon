@@ -1,6 +1,7 @@
 package org.geepawhill.dungeon
 
-enum class Cell {
+
+enum class CellType {
     BORDER,
     GRANITE,
     FLOOR,

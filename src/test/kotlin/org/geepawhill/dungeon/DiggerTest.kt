@@ -20,7 +20,7 @@ class DiggerTest {
     @Test
     fun `dig to direct floor`() {
         val start = Coords(15, 10)
-        map[17, 10] = Cell.FLOOR
+        map[17, 10] = CellType.FLOOR
         val digger = Digger(map, start, EAST)
         assertThat(digger.cause).isEqualTo(Coords(17, 10))
         assertThat(digger.dug).containsExactly(Coords(16, 10))
@@ -29,7 +29,7 @@ class DiggerTest {
     @Test
     fun `dig to indirect floor`() {
         val start = Coords(15, 10)
-        map[17, 11] = Cell.FLOOR
+        map[17, 11] = CellType.FLOOR
         val digger = Digger(map, start, EAST)
         assertThat(digger.cause).isEqualTo(Coords(17, 11))
         assertThat(digger.dug).containsExactly(Coords(16, 10), Coords(17, 10))
@@ -38,7 +38,7 @@ class DiggerTest {
     @Test
     fun `dig to hallway`() {
         val start = Coords(15, 10)
-        map[17, 10] = Cell.HALLWAY
+        map[17, 10] = CellType.HALLWAY
         val digger = Digger(map, start, EAST)
         assertThat(digger.cause).isEqualTo(Coords(17, 10))
         assertThat(digger.dug).containsExactly(Coords(16, 10))
@@ -47,7 +47,7 @@ class DiggerTest {
     @Test
     fun `dig to indirect hallway`() {
         val start = Coords(15, 10)
-        map[17, 11] = Cell.HALLWAY
+        map[17, 11] = CellType.HALLWAY
         val digger = Digger(map, start, EAST)
         assertThat(digger.cause).isEqualTo(Coords(17, 11))
         assertThat(digger.dug).containsExactly(Coords(16, 10), Coords(17, 10))

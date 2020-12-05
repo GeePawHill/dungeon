@@ -20,15 +20,15 @@ class ConnectorTest {
     @Test
     fun `commit`() {
         val c = Connector(map, Coords(10, 2), Direction.EAST)
-        c.commit(Cell.GROUP_HALLWAY)
+        c.commit(CellType.GROUP_HALLWAY)
         for (x in 1..18) {
-            assertThat(map[x, 2]).withFailMessage("Checking $x").isEqualTo(Cell.GROUP_HALLWAY)
+            assertThat(map[x, 2]).withFailMessage("Checking $x").isEqualTo(CellType.GROUP_HALLWAY)
         }
     }
 
     @Test
     fun `direct blocker`() {
-        map[15, 2] = Cell.FLOOR
+        map[15, 2] = CellType.FLOOR
         val c = Connector(map, Coords(10, 2), Direction.EAST)
         assertThat(c.end.coords).isEqualTo(Coords(14, 2))
         assertThat(c.end.cause).isEqualTo(Coords(15, 2))
@@ -38,7 +38,7 @@ class ConnectorTest {
 
     @Test
     fun `side blocker`() {
-        map[15, 3] = Cell.FLOOR
+        map[15, 3] = CellType.FLOOR
         val c = Connector(map, Coords(10, 2), Direction.EAST)
         assertThat(c.end.coords).isEqualTo(Coords(15, 2))
         assertThat(c.end.cause).isEqualTo(Coords(15, 3))
@@ -48,7 +48,7 @@ class ConnectorTest {
 
     @Test
     fun `side blocker backwards`() {
-        map[8, 3] = Cell.FLOOR
+        map[8, 3] = CellType.FLOOR
         val c = Connector(map, Coords(10, 2), Direction.EAST)
         assertThat(c.end.coords).isEqualTo(Coords(18, 2))
         assertThat(c.end.cause).isEqualTo(Coords(19, 2))

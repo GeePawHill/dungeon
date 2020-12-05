@@ -17,7 +17,7 @@ data class Area(val west: Int, val north: Int, val east: Int, val south: Int) {
         return intersects(Area(coords.x, coords.y, coords.x, coords.y))
     }
 
-    fun fill(map: Map, type: Cell) {
+    fun fill(map: Map, type: CellType) {
         for (c in west..east) {
             for (r in north..south) map[c, r] = type
         }

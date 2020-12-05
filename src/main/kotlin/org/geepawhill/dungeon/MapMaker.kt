@@ -10,7 +10,7 @@ class MapMaker(val map: Map) {
         while (true) {
             map.reset()
             makePlacements()
-            makeRandomRooms(30)
+            makeRandomRooms(10)
             makeGroups()
             if (connectGroups() == true) return
         }
@@ -20,7 +20,7 @@ class MapMaker(val map: Map) {
         rooms.add(area)
         for (c in area.west..area.east) {
             for (r in area.north..area.south) {
-                map.cell[c, r] = Cell.FLOOR
+                map.cell[c, r] = CellType.FLOOR
             }
         }
     }
@@ -61,7 +61,7 @@ class MapMaker(val map: Map) {
         while (disconnecteds.isNotEmpty()) {
             val from = randoms.choose(disconnecteds)
             val digger = findLegalHallway(from)
-            if (map[digger.cause] == Cell.FLOOR) {
+            if (map[digger.cause] == CellType.FLOOR) {
                 val to = rooms.filter { it.contains(digger.cause) }[0]
                 disconnecteds.remove(to)
                 addRoomToRoom(from, to, digger.hallway)
@@ -69,7 +69,7 @@ class MapMaker(val map: Map) {
                 addRoomToHallway(from, digger.cause, digger.hallway)
             }
             disconnecteds.remove(from)
-            digger.commit(Cell.HALLWAY)
+            digger.commit(CellType.HALLWAY)
         }
 
         for (group in groups) {
@@ -87,7 +87,7 @@ class MapMaker(val map: Map) {
 
     fun connectGroups(): Boolean {
         var attempts = 0
-        while (groups.size > 1 && attempts < 9) {
+        while (groups.size > 1 && attempts < 100) {
             attempts += 1
             println("$attempts ---------")
             val from = randoms.choose(groups)
@@ -95,16 +95,21 @@ class MapMaker(val map: Map) {
             val direction = randoms.orthogonal()
             println("Direction: $direction")
             val seed = chooseGroupEdge(from, direction)[direction]
+            val neigbhor1 = map[seed[direction.neighbors().first]]
+            val neighbor2 = map[seed[direction.neighbors().second]]
+            if (neigbhor1 != CellType.GRANITE) continue
+            if (neighbor2 != CellType.GRANITE) continue
             println("Seed: $seed")
             val connector = Connector(map, seed, direction)
             if (!connector.isLegal) continue
             println("Got one!")
-            connector.commit(Cell.GROUP_HALLWAY)
+            connector.commit(CellType.GROUP_HALLWAY)
             println("Connector: ${connector.area}")
             val to = groups.filter { it.containsInside(connector.end.cause) }[0]
             println("To: ${to.union}")
             mergeGroups(from, to, connector.area)
         }
+        println(attempts)
         return true
     }
 
@@ -146,7 +151,7 @@ class MapMaker(val map: Map) {
     fun findLegalHallway(from: Area): Digger {
         for (i in 0..1000) {
             val digger = makeDigger(from, randoms.orthogonal())
-            if (map[digger.cause] == Cell.BORDER) continue
+            if (map[digger.cause] == CellType.BORDER) continue
             return digger
         }
         throw java.lang.RuntimeException("No legal hallway")
@@ -169,10 +174,13 @@ class MapMaker(val map: Map) {
     }
 
     fun chooseGroupEdge(group: SubGroup, direction: Direction): Coords {
-        var groupEdge = chooseEdge(group.union, direction)
-        while (map[groupEdge] == Cell.GRANITE || !group.containsInside(groupEdge)) groupEdge =
-            groupEdge[direction.opposite()]
-        return groupEdge
+        var groupEdge = chooseEdge(group.union, direction)[direction]
+        while (map[groupEdge] != CellType.BORDER) groupEdge = groupEdge[direction]
+        groupEdge = groupEdge[direction.opposite()]
+        while (true) {
+            if (group.containsInside(groupEdge)) return groupEdge
+            groupEdge = groupEdge[direction.opposite()]
+        }
     }
 
     companion object {

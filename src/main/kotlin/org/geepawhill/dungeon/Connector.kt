@@ -11,19 +11,19 @@ class Connector(private val map: Map, seed: Coords, private val direction: Direc
 
     val end: Terminator = moveToTerminator(seed, direction, false)
     val start: Terminator = moveToTerminator(end.coords[opposite], opposite, true)
-    val isLegal = map[end.cause] != Cell.BORDER && map[start.cause] != Cell.BORDER
+    val isLegal = map[end.cause] != CellType.BORDER && map[start.cause] != CellType.BORDER
     val area = Area.normalized(start.coords, end.coords)
 
-    fun commit(type: Cell) {
+    fun commit(type: CellType) {
         area.fill(map, type)
     }
 
     private fun moveToTerminator(seed: Coords, direction: Direction, track: Boolean): Terminator {
         var last = seed
         while (true) {
-            if (map[last[neighbor1]] != Cell.GRANITE) return Terminator(last, last[neighbor1])
-            if (map[last[neighbor2]] != Cell.GRANITE) return Terminator(last, last[neighbor2])
-            if (map[last[direction]] != Cell.GRANITE) return Terminator(last, last[direction])
+            if (map[last[neighbor1]] != CellType.GRANITE) return Terminator(last, last[neighbor1])
+            if (map[last[neighbor2]] != CellType.GRANITE) return Terminator(last, last[neighbor2])
+            if (map[last[direction]] != CellType.GRANITE) return Terminator(last, last[direction])
             if (track) cells.add(last)
             last = last[direction]
         }

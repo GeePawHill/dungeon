@@ -71,10 +71,10 @@ class AreaTest {
     fun `fill`() {
         val map = Map(10, 10)
         val area = Area(0, 0, 5, 5)
-        area.fill(map, Cell.GROUP_HALLWAY)
+        area.fill(map, CellType.GROUP_HALLWAY)
         for (c in 0..5) {
             for (r in 0..5) {
-                assertThat(map[c, r]).withFailMessage("Testing ($c,$r)").isEqualTo(Cell.GROUP_HALLWAY)
+                assertThat(map[c, r]).withFailMessage("Testing ($c,$r)").isEqualTo(CellType.GROUP_HALLWAY)
             }
         }
     }

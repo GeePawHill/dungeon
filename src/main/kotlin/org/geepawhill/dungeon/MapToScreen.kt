@@ -20,10 +20,10 @@ class MapToScreen(val map: Map) {
         for (c in 0 until map.width) {
             for (r in 0 until map.height) {
                 when (map.cell[c, r]) {
-                    Cell.BORDER -> destination.add(borderToScreen(c, r))
-                    Cell.FLOOR -> destination.add(floorToScreen(c, r))
-                    Cell.HALLWAY -> destination.add(hallwayToScreen(c, r))
-                    Cell.GROUP_HALLWAY -> destination.add(groupHallwayToScreen(c, r))
+                    CellType.BORDER -> destination.add(borderToScreen(c, r))
+                    CellType.FLOOR -> destination.add(floorToScreen(c, r))
+                    CellType.HALLWAY -> destination.add(hallwayToScreen(c, r))
+                    CellType.GROUP_HALLWAY -> destination.add(groupHallwayToScreen(c, r))
                     else -> {
                     }
                 }

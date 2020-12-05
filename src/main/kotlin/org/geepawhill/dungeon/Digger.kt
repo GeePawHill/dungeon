@@ -24,15 +24,15 @@ class Digger(val map: Map, val start: Coords, val direction: Direction) {
         var current = start[direction]
         while (true) {
             dug += current
-            if (map[current[neighbor1]] != Cell.GRANITE) {
+            if (map[current[neighbor1]] != CellType.GRANITE) {
                 cause = current[neighbor1]
                 break
             }
-            if (map[current[neighbor2]] != Cell.GRANITE) {
+            if (map[current[neighbor2]] != CellType.GRANITE) {
                 cause = current[neighbor2]
                 break
             }
-            if (map[current[direction]] != Cell.GRANITE) {
+            if (map[current[direction]] != CellType.GRANITE) {
                 cause = current[direction]
                 break
             }
@@ -50,7 +50,7 @@ class Digger(val map: Map, val start: Coords, val direction: Direction) {
         }
     }
 
-    fun commit(cell: Cell) {
+    fun commit(cell: CellType) {
         for (coords in dug) map[coords] = cell
     }
 
