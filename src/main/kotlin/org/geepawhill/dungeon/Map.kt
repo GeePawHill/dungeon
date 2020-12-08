@@ -21,6 +21,7 @@ class Map(val width: Int, val height: Int) {
     }
 
     fun reset() {
+        cell.clear()
         for (col in 0 until width) {
             cell[col, 0] = CellType.BORDER
             cell[col, height - 1] = CellType.BORDER

@@ -14,6 +14,7 @@ class MapToScreen(val map: Map, val cellLayer: Group) {
     val cell = SimpleObjectProperty<Coords>()
 
     fun update() {
+        cellLayer.children.clear()
         mapToScreen(cellLayer.children)
     }
 
@@ -74,5 +75,4 @@ class MapToScreen(val map: Map, val cellLayer: Group) {
 
     private fun toRectangle(x: Int, y: Int) =
         Rectangle2D(x * Map.TILESIZE, y * Map.TILESIZE, Map.TILESIZE, Map.TILESIZE)
-
 }

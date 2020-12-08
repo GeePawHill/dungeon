@@ -9,9 +9,13 @@ class MapMaker(val map: Map) {
     private var rules = MapRules()
 
     fun generate(rules: MapRules = MapRules()) {
+        println("Generating...")
+        println("   Seed = ${rules.seed}")
         this.rules = rules
         randoms.reseed(rules.seed)
         while (true) {
+            rooms.clear()
+            groups.clear()
             map.reset()
             makePlacements()
             makeRandomRooms(10)
@@ -76,13 +80,13 @@ class MapMaker(val map: Map) {
             digger.commit(CellType.HALLWAY)
         }
 
-        for (group in groups) {
-            println("Group")
-            println("Rooms")
-            group.rooms.forEach { println("\t$it") }
-            println("Hallways")
-            group.hallways.forEach { println("\t$it") }
-        }
+//        for (group in groups) {
+//            println("Group")
+//            println("Rooms")
+//            group.rooms.forEach { println("\t$it") }
+//            println("Hallways")
+//            group.hallways.forEach { println("\t$it") }
+//        }
     }
 
     fun makePlacements() {

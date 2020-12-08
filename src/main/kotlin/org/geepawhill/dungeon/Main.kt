@@ -25,15 +25,21 @@ class MainView : View() {
     }
 
     val zoomer = PanAndZoomPane(zoomable)
+    val rulesView = RulesView(MapRules()) { rules -> generate(rules) }
 
     override val root = borderpane {
-        right = RulesView(maker).root
+        right = rulesView.root
         center = zoomer
     }
 
 
     init {
         mapToScreen = MapToScreen(map, cellLayer)
+        mapToScreen.update()
+    }
+
+    fun generate(rules: MapRules) {
+        maker.generate(rules)
         mapToScreen.update()
     }
 

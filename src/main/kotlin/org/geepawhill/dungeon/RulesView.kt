@@ -4,9 +4,14 @@ import javafx.beans.property.SimpleLongProperty
 import javafx.scene.Parent
 import tornadofx.*
 
-class RulesView(val maker: MapMaker) : View() {
+class RulesView(r: MapRules, onGenerate: (MapRules) -> Unit) : View() {
 
-    val seed = SimpleLongProperty(0)
+    val seed = SimpleLongProperty(r.seed)
+
+    val rules: MapRules
+        get() {
+            return MapRules(seed.value)
+        }
 
     override val root: Parent = form {
         fieldset {
@@ -14,13 +19,8 @@ class RulesView(val maker: MapMaker) : View() {
                 textfield(seed)
             }
             button("Generate") {
-                action { generate() }
+                action { onGenerate(rules) }
             }
         }
     }
-
-    fun generate() {
-        maker.generate(MapRules(seed.value))
-    }
-
 }
