@@ -18,7 +18,7 @@ class MapMaker(val map: Map) {
             groups.clear()
             map.reset()
             makePlacements()
-            makeRandomRooms(10)
+            makeRandomRooms(rules.density)
             makeGroups()
             if (connectGroups()) return
         }
@@ -95,7 +95,7 @@ class MapMaker(val map: Map) {
 
     fun connectGroups(): Boolean {
         var attempts = 0
-        while (groups.size > 1 && attempts < 100) {
+        while (groups.size > 1 && attempts < 200) {
             attempts += 1
             println("$attempts ---------")
             val from = randoms.choose(groups)

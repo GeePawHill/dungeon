@@ -13,7 +13,7 @@ import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 
 class PanAndZoomPane(private val target: Node) : ScrollPane() {
-    private var scaleValue = 0.7
+    private var scaleValue = 0.08
     private val zoomIntensity = 0.02
     private val zoomNode: Node
     private fun outerNode(node: Node): Node {
