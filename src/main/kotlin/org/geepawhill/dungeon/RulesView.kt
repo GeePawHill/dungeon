@@ -9,10 +9,11 @@ class RulesView(r: MapRules, onGenerate: (MapRules) -> Unit) : View() {
 
     val seed = SimpleLongProperty(r.seed)
     val density = SimpleIntegerProperty(r.density)
+    val groupAttempts = SimpleIntegerProperty(r.groupAttempts)
 
     val rules: MapRules
         get() {
-            return MapRules(seed.value, density.value)
+            return MapRules(seed.value, density.value, groupAttempts.value)
         }
 
     override val root: Parent = form {
@@ -22,6 +23,9 @@ class RulesView(r: MapRules, onGenerate: (MapRules) -> Unit) : View() {
             }
             field("Density %") {
                 textfield(density)
+            }
+            field("Group Attempts") {
+                textfield(groupAttempts)
             }
             button("Generate") {
                 action { onGenerate(rules) }

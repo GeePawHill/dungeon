@@ -95,7 +95,7 @@ class MapMaker(val map: Map) {
 
     fun connectGroups(): Boolean {
         var attempts = 0
-        while (groups.size > 1 && attempts < 200) {
+        while (groups.size > 1 && attempts < rules.groupAttempts) {
             attempts += 1
             println("$attempts ---------")
             val from = randoms.choose(groups)
@@ -110,11 +110,10 @@ class MapMaker(val map: Map) {
             println("Seed: $seed")
             val connector = Connector(map, seed, direction)
             if (!connector.isLegal) continue
-            println("Got one!")
+            val to = groups.filter { it.containsInside(connector.end.cause) }[0]
+            if (to == from) continue
             connector.commit(CellType.GROUP_HALLWAY)
             println("Connector: ${connector.area}")
-            val to = groups.filter { it.containsInside(connector.end.cause) }[0]
-            println("To: ${to.union}")
             mergeGroups(from, to, connector.area)
         }
         println(attempts)
