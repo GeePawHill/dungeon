@@ -20,12 +20,30 @@ class RulesView(r: MapRules, onGenerate: (MapRules) -> Unit) : View() {
         fieldset {
             field("Seed") {
                 textfield(seed)
+                button("+") {
+                    action {
+                        seed.value += 1
+                        onGenerate(rules)
+                    }
+                }
             }
             field("Density %") {
                 textfield(density)
             }
             field("Group Attempts") {
                 textfield(groupAttempts)
+                button("-") {
+                    action {
+                        groupAttempts.value -= 1
+                        onGenerate(rules)
+                    }
+                }
+                button("+") {
+                    action {
+                        groupAttempts.value += 1
+                        onGenerate(rules)
+                    }
+                }
             }
             button("Generate") {
                 action { onGenerate(rules) }

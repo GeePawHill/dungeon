@@ -17,11 +17,13 @@ class MainView : View() {
     val mapToScreen: MapToScreen
 
     lateinit var cellLayer: Group
+    lateinit var markupLayer: Group
 
     val zoomable = group {
         rectangle(0.0, 0.0, map.widthInPixels, map.heightInPixels) {
         }
         cellLayer = group {}
+        markupLayer = group {}
     }
 
     val zoomer = PanAndZoomPane(zoomable)
