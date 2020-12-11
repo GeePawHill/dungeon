@@ -5,6 +5,7 @@ import java.lang.Integer.min
 
 data class Area(val west: Int, val north: Int, val east: Int, val south: Int) {
 
+    val longest: Int get() = max(east - west, south - north)
     fun margin(amount: Int): Area {
         return Area(west - amount, north - amount, east + amount, south + amount)
     }

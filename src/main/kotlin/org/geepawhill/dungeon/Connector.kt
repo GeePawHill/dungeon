@@ -11,8 +11,10 @@ class Connector(private val map: Map, seed: Coords, private val direction: Direc
 
     val end: Terminator = moveToTerminator(seed, direction, false)
     val start: Terminator = moveToTerminator(end.coords[opposite], opposite, true)
-    val isLegal = map[end.cause] != CellType.BORDER && map[start.cause] != CellType.BORDER
     val area = Area.normalized(start.coords, end.coords)
+    val isLegal = map[end.cause] != CellType.BORDER &&
+            map[start.cause] != CellType.BORDER &&
+            area.longest > 2
 
     fun commit(type: CellType) {
         area.fill(map, type)
