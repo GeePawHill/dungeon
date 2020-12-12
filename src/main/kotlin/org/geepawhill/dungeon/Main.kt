@@ -12,7 +12,7 @@ class Main : App(MainView::class) {
 }
 
 class MainView : View() {
-    val map = Map(100, 100)
+    val map = Map(200, 200)
     val maker = MapMaker(map)
     val mapToScreen: MapToScreen
 
@@ -27,7 +27,7 @@ class MainView : View() {
     }
 
     val zoomer = PanAndZoomPane(zoomable)
-    val rulesView = RulesView(MapRules()) { rules -> generate(rules) }
+    val rulesView = RulesView(MapRules(preferNearest = true)) { rules -> generate(rules) }
 
     override val root = borderpane {
         right = rulesView.root

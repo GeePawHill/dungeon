@@ -1,5 +1,6 @@
 package org.geepawhill.dungeon
 
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleLongProperty
 import javafx.scene.Parent
@@ -10,10 +11,12 @@ class RulesView(r: MapRules, onGenerate: (MapRules) -> Unit) : View() {
     val seed = SimpleLongProperty(r.seed)
     val density = SimpleIntegerProperty(r.density)
     val groupAttempts = SimpleIntegerProperty(r.groupAttempts)
+    val preferNearest = SimpleBooleanProperty(r.preferNearest)
+    val copies = SimpleIntegerProperty(r.copies)
 
     val rules: MapRules
         get() {
-            return MapRules(seed.value, density.value, groupAttempts.value)
+            return MapRules(seed.value, density.value, groupAttempts.value, preferNearest.value, copies.value)
         }
 
     override val root: Parent = form {
@@ -44,6 +47,14 @@ class RulesView(r: MapRules, onGenerate: (MapRules) -> Unit) : View() {
                         onGenerate(rules)
                     }
                 }
+            }
+            checkbox("Prefer Nearest", preferNearest) {
+                action {
+                    onGenerate(rules)
+                }
+            }
+            field("Copies") {
+                textfield(copies)
             }
             button("Generate") {
                 action { onGenerate(rules) }

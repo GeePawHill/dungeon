@@ -9,6 +9,10 @@ enum class Direction {
     SOUTHEAST,
     NORTHWEST,
     SOUTHWEST;
+
+    companion object {
+        val orthogonals = setOf(NORTH, SOUTH, EAST, WEST)
+    }
 }
 
 fun Direction.opposite(): Direction = when (this) {

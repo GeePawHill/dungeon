@@ -6,9 +6,9 @@ class MapMaker(val map: Map) {
     val rooms = mutableListOf<Area>()
     val groups = mutableListOf<SubGroup>()
 
-    private var rules = MapRules()
+    private var rules = MapRules(preferNearest = true)
 
-    fun generate(rules: MapRules = MapRules()) {
+    fun generate(rules: MapRules = MapRules(preferNearest = true)) {
         this.rules = rules
         randoms.reseed(rules.seed)
         while (true) {
@@ -60,13 +60,27 @@ class MapMaker(val map: Map) {
         return (attempt.east - attempt.west) * (attempt.south - attempt.north)
     }
 
+
+    class NearestComparator(val from: Area) : Comparator<Area> {
+        override fun compare(o1: Area?, o2: Area?): Int {
+            return from.union(o1!!).size - from.union(o2!!).size
+        }
+
+    }
+
     fun makeGroups(): Boolean {
         val disconnecteds = rooms.toMutableList()
         var attempts = 0
         while (disconnecteds.isNotEmpty() && attempts < 1000) {
             attempts += 1
             val from = randoms.choose(disconnecteds)
-            val connectors = findLegalHallway(from)
+            val directions = Direction.orthogonals.toMutableList()
+            if (rules.preferNearest && disconnecteds.size > 1) {
+                disconnecteds.sortWith(NearestComparator(from))
+                val nearestDirections = nearestDirections(from, disconnecteds[1])
+                directions += nearestDirections
+            }
+            val connectors = findLegalHallway(from, directions)
             if (connectors.isEmpty()) continue
             val connector = connectors[0]
             if (map[connector.end.cause] == CellType.FLOOR) {
@@ -80,6 +94,16 @@ class MapMaker(val map: Map) {
             connector.commit(CellType.HALLWAY)
         }
         return disconnecteds.isEmpty()
+    }
+
+    fun nearestDirections(from: Area, to: Area): List<Direction> {
+        val result = mutableListOf<Direction>()
+        val union = from.union(to)
+        if (union.north < from.north) result += Array(rules.copies) { Direction.NORTH }
+        if (union.south > from.south) result += Array(rules.copies) { Direction.SOUTH }
+        if (union.west < from.west) result += Array(rules.copies) { Direction.WEST }
+        if (union.east > from.east) result += Array(rules.copies) { Direction.EAST }
+        return result
     }
 
     fun makePlacements() {
@@ -142,9 +166,11 @@ class MapMaker(val map: Map) {
         groups.add(group)
     }
 
-    fun findLegalHallway(from: Area): List<Connector> {
+    fun findLegalHallway(from: Area, directions: MutableList<Direction>): List<Connector> {
+        // find closest other area
+        // figure out its direction
         for (i in 0..1000) {
-            val connector = makeConnector(from, randoms.orthogonal())
+            val connector = makeConnector(from, randoms.choose(directions))
             if (map[connector.end.cause] == CellType.BORDER) continue
             return listOf(connector)
         }
