@@ -9,8 +9,6 @@ class MapMaker(val map: Map) {
     private var rules = MapRules()
 
     fun generate(rules: MapRules = MapRules()) {
-        println("Generating...")
-        println("   Seed = ${rules.seed}")
         this.rules = rules
         randoms.reseed(rules.seed)
         while (true) {
@@ -45,7 +43,6 @@ class MapMaker(val map: Map) {
             target -= attemptFill()
             attempts -= 1
         }
-        println("Attempts: $attempts")
     }
 
     fun attemptFill(): Int {
@@ -56,7 +53,6 @@ class MapMaker(val map: Map) {
         if (east > map.width - 2) return 0
         if (south > map.height - 2) return 0
         val attempt = Area(west, north, east, south)
-        println(attempt)
         for (room in rooms) {
             if (room.margin(1).intersects(attempt.margin(1))) return 0
         }
@@ -94,26 +90,20 @@ class MapMaker(val map: Map) {
         var attempts = 0
         while (groups.size > 1 && attempts < rules.groupAttempts) {
             attempts += 1
-            println("$attempts ---------")
             val from = randoms.choose(groups)
-            println("From: ${from.union}")
             val direction = randoms.orthogonal()
-            println("Direction: $direction")
             val seed = chooseGroupEdge(from, direction)[direction]
             val neigbhor1 = map[seed[direction.neighbors().first]]
             val neighbor2 = map[seed[direction.neighbors().second]]
             if (neigbhor1 != CellType.GRANITE) continue
             if (neighbor2 != CellType.GRANITE) continue
-            println("Seed: $seed")
             val connector = Connector(map, seed, direction)
             if (!connector.isLegal) continue
             val to = groups.filter { it.containsInside(connector.end.cause) }[0]
             if (to == from) continue
             connector.commit(CellType.GROUP_HALLWAY)
-            println("Connector: ${connector.area}")
             mergeGroups(from, to, connector.area)
         }
-        println(attempts)
         return true
     }
 
