@@ -12,7 +12,7 @@ class Main : App(MainView::class) {
 }
 
 class MainView : View() {
-    val map = Map(200, 200)
+    val map = Map(100, 100)
     val maker = MapMaker(map)
     val mapToScreen: MapToScreen
 

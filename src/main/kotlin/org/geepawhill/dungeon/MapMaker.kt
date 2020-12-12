@@ -19,7 +19,7 @@ class MapMaker(val map: Map) {
             map.reset()
             makePlacements()
             makeRandomRooms(rules.density)
-            makeGroups()
+            if (!makeGroups()) continue
             if (connectGroups()) return
         }
     }
@@ -64,29 +64,26 @@ class MapMaker(val map: Map) {
         return (attempt.east - attempt.west) * (attempt.south - attempt.north)
     }
 
-    fun makeGroups() {
+    fun makeGroups(): Boolean {
         val disconnecteds = rooms.toMutableList()
-        while (disconnecteds.isNotEmpty()) {
+        var attempts = 0
+        while (disconnecteds.isNotEmpty() && attempts < 1000) {
+            attempts += 1
             val from = randoms.choose(disconnecteds)
-            val digger = findLegalHallway(from)
-            if (map[digger.cause] == CellType.FLOOR) {
-                val to = rooms.filter { it.contains(digger.cause) }[0]
+            val connectors = findLegalHallway(from)
+            if (connectors.isEmpty()) continue
+            val connector = connectors[0]
+            if (map[connector.end.cause] == CellType.FLOOR) {
+                val to = rooms.filter { it.contains(connector.end.cause) }[0]
                 disconnecteds.remove(to)
-                addRoomToRoom(from, to, digger.hallway)
+                addRoomToRoom(from, to, connector.area)
             } else {
-                addRoomToHallway(from, digger.cause, digger.hallway)
+                addRoomToHallway(from, connector.end.cause, connector.area)
             }
             disconnecteds.remove(from)
-            digger.commit(CellType.HALLWAY)
+            connector.commit(CellType.HALLWAY)
         }
-
-//        for (group in groups) {
-//            println("Group")
-//            println("Rooms")
-//            group.rooms.forEach { println("\t$it") }
-//            println("Hallways")
-//            group.hallways.forEach { println("\t$it") }
-//        }
+        return disconnecteds.isEmpty()
     }
 
     fun makePlacements() {
@@ -155,19 +152,19 @@ class MapMaker(val map: Map) {
         groups.add(group)
     }
 
-    fun findLegalHallway(from: Area): Digger {
+    fun findLegalHallway(from: Area): List<Connector> {
         for (i in 0..1000) {
-            val digger = makeDigger(from, randoms.orthogonal())
-            if (map[digger.cause] == CellType.BORDER) continue
-            return digger
+            val connector = makeConnector(from, randoms.orthogonal())
+            if (map[connector.end.cause] == CellType.BORDER) continue
+            return listOf(connector)
         }
-        throw java.lang.RuntimeException("No legal hallway")
+        return emptyList()
     }
 
-    private fun makeDigger(area: Area, direction: Direction): Digger {
+    private fun makeConnector(area: Area, direction: Direction): Connector {
         val start = chooseEdge(area, direction)
-        val digger = Digger(map, start, direction)
-        return digger
+        val connector = Connector(map, start[direction], direction)
+        return connector
     }
 
     fun chooseEdge(area: Area, direction: Direction): Coords {
